@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Job Transfer App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4 text-center">Job Transfer App</h1>
+        
+        <form method="POST" action="{% url 'job_transfer' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="job_title" class="form-label">Enter your current or most recent job title:</label>
+                <input type="text" id="job_title" name="job_title" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-dark border border-white">Submit</button>
+        </form>
+
+        {% if response %}
+            <h2 class="mt-5">Original Job Title:</h2>
+            <p class="job-title bg-dark text-white"><span>{{ response.original_job_title }}</span></p>
+
+            <h2>Similar Jobs:</h2>
+            <form method="POST" action="{% url 'course_suggester' %}">
+                {% csrf_token %}
+                {% for job in response.similar_jobs %}
+                    <div class="similar-job-card">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" id="{{ job.job_title }}" name="selected_job" value="{{ job.job_title }}|{{ job.noc_code }}">
+                            <label class="form-check-label similar-job-label" for="{{ job.job_title }}">{{ job.job_title }} - NOC: {{ job.noc_code }}</label>
+                        </div>
+                        <p class="mt-2">Similarity: {{ job.percent_similarity }}</p>
+                    </div>
+                {% endfor %}
+                <button type="submit" class="btn btn-dark border border-white mt-3">Submit</button>
+            </form>
+        {% endif %}
+    </div>
+
+      
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+
+</body>
+</html>
